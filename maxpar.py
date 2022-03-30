@@ -28,6 +28,15 @@ def bernstein(t1,t2):
             return True
 
 
+#étapes de la parallèlisation maximal:
+
+#Lister les interférences entre les diffèrentes taches
+#Déterminer à partir des interférences les relations de précédences à imposer pour évites les interférences
+#Supprimer les arcs qui n'entraineront pas d'interférence 
+#Ajouter les relations de précédences trouver pour éviter les interférences 
+#supprimer les redondances = les plus courts
+
+
 class TaskSystem:  
     #classe TaskSystem
     def __init__(self,taches,dic): 

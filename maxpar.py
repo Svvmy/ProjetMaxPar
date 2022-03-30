@@ -7,19 +7,21 @@ class Task:
     writes = []
     run = None
 
+
+
 def bernstein(t1,t2):
     for i in t1.writes:
         for j in t2.writes:
             if(i==j):
                 print("interferance")
                 return False
-    for i in t1.writes:
-        for j in t2.reads:
+    for i in t1.reads:
+        for j in t2.writes:
             if(i==j):
                 print("inteferance")
                 return False
-    for i in t2.writes:
-        for j in t1.reads:
+    for i in t1.writes:
+        for j in t2.reads:
             if(i==j):
                 print("inteferance")
                 return False      
@@ -85,8 +87,47 @@ class TaskSystem:
                         dicfinal[nomTache.name].append(i)
         
             
+#exécuter les tâches du système en parallélisant celles qui peuvent être parallélisées 
+def run(self):
+     id=0
+     dictio= copy.deepcopy(dicfinal) #on travail sur une copie du dictionaire
+     l1= taches #listes des taches non-éxecutées encore
+     l2= list() #listes des taches déja éxecutées
+     print("les tâche de niveau",id,end=": ")
+     for key, value in dictio.items(): #éxecuter les taches de niveau 0
+      if(not value): #pas de precedence 
+        for t in taches:
+            if (t.name==key):
+                l2.append(t)
+                l1.remove(t)
+                print(t.name,end=":")
+                t.run()
+                dicfinal.pop(key)
+     e=True
 
+     while(l1):#éxecuter les autres tâches
+      print()
+      id=id+1
+      print("les tâche de niveau", id, end=": ")
+      dictio = copy.deepcopy(dicfinal)
+      for key, value in dictio.items():
+       for v in value:
+         for t in l2:
+          if(t.name==v):
+           e=True
+           break
+          else:
+           e=False
+       if(e):
 
+             T=get_tache(key,l1)
+             l2.append(T)
+             l1.remove(T)
+             print(T.name, end=":")
+             T.run()
+             dicfinal.pop(key)
+     print()
+     print("Pour consulter l'ordre et les précédents de chaque tâches, il faut consulter le vrai dictionaire (dicfinal)")
 
 
 # liste des taches

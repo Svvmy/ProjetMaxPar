@@ -1,4 +1,5 @@
 from unicodedata import name
+import copy
 
 
 class Task:
@@ -6,7 +7,6 @@ class Task:
     reads = []
     writes = []
     run = None
-
 
 
 def bernstein(t1,t2):
@@ -27,49 +27,6 @@ def bernstein(t1,t2):
                 return False      
             return True
 
-
-#utilisation de la classe Task   
-X = None
-Y = None
-Z = None
-M = None
-
-def runT1():
-    global X
-    X = 1
-
-def runT2():
-    global Y
-    Y = 2
-
-def runT3():
-    global M
-    M = 3
-
-def runTsomme():
-    global X, Y, Z
-    Z = X + Y
-
-t1 = Task()
-t1.name = "T1"
-t1.writes = ["X"]
-t1.run = runT1
-
-t2 = Task()
-t2.name = "T2"
-t2.writes = ["Y"]
-t2.run = runT2
-
-t3 = Task()
-t3.name = "T2"
-t3.writes = ["M"]
-t3.run = runT3
-
-tSomme = Task()
-tSomme.name = "somme"
-tSomme.reads = ["X", "Y"]
-tSomme.writes = ["Z"]
-tSomme.run = runTsomme
 
 class TaskSystem:  
     #classe TaskSystem
@@ -120,7 +77,7 @@ def run(self):
            e=False
        if(e):
 
-             T=get_tache(key,l1)
+             T=getTache(key,l1)
              l2.append(T)
              l1.remove(T)
              print(T.name, end=":")
@@ -129,6 +86,54 @@ def run(self):
      print()
      print("Pour consulter l'ordre et les précédents de chaque tâches, il faut consulter le vrai dictionaire (dicfinal)")
 
+def getTache(nomdetache,taches):
+    for t in taches:
+        if(nomdetache == t.name):
+            return t
+
+
+#utilisation de la classe Task   
+X = None
+Y = None
+Z = None
+M = None
+
+def runT1():
+    global X
+    X = 1
+
+def runT2():
+    global Y
+    Y = 2
+
+def runT3():
+    global M
+    M = 3
+
+def runTsomme():
+    global X, Y, Z
+    Z = X + Y
+
+t1 = Task()
+t1.name = "T1"
+t1.writes = ["X"]
+t1.run = runT1
+
+t2 = Task()
+t2.name = "T2"
+t2.writes = ["Y"]
+t2.run = runT2
+
+t3 = Task()
+t3.name = "T2"
+t3.writes = ["M"]
+t3.run = runT3
+
+tSomme = Task()
+tSomme.name = "somme"
+tSomme.reads = ["X", "Y"]
+tSomme.writes = ["Z"]
+tSomme.run = runTsomme
 
 # liste des taches
 taches = list()

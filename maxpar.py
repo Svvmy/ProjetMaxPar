@@ -64,7 +64,7 @@ def SupprInter(nomt1,nomt2):
                 print(dic)
                 break
     else:
-        print("pas d'interferance entre les deux taches")
+        print("Aucune interferance entre les deux taches")
 
 
 

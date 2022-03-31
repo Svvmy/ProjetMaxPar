@@ -1,3 +1,4 @@
+from curses import keyname
 from unicodedata import name
 import copy
 
@@ -13,19 +14,20 @@ def bernstein(t1,t2):
     for i in t1.writes:
         for j in t2.writes:
             if(i==j):
-                print("interferance")
+                print("interferance domaine d'écriture entre",t1.name,t2.name)
                 return False
     for i in t1.reads:
         for j in t2.writes:
             if(i==j):
-                print("inteferance")
+                print("inteferance entre le domaine de lecture de",t1.name, "et le domaine d'ecriture de",t2.name)
                 return False
     for i in t1.writes:
         for j in t2.reads:
             if(i==j):
-                print("inteferance")
+                print("inteferance entre le domaine d'ecriture de",t1.name, "et le domaine de lecture de",t2.name)
                 return False      
-            return True
+            
+    return True
 
 
 #étapes de la parallèlisation maximal:
@@ -35,6 +37,36 @@ def bernstein(t1,t2):
 #Supprimer les arcs qui n'entraineront pas d'interférence 
 #Ajouter les relations de précédences trouver pour éviter les interférences 
 #supprimer les redondances = les plus courts
+
+
+#voir si la tache 1 a deja en précédence la tache 2 --> arret
+""" t1 et t2 
+    
+    verifie cond bernstein
+        si interferance alors
+            verifier que t1 n'est pas deja en précédence de t2
+        sinon
+            je passe t1 en precedence de t2
+        sinon je fait rien
+    
+ """ 
+
+
+def SupprInter(nomt1,nomt2): 
+    if not bernstein(nomt1, nomt2):#vérifie si interferance 
+        for i in dic[nomt2.name]: #parcours les précédences de la tache 2
+            if(i == nomt1.name): #Et ce que t1 est deja dans les precedences de t2
+                print("relations de précédence entre",nomt1.name,nomt2.name)
+                return False
+            else:
+                print(dic)
+                dic[nomt2.name].append(nomt1.name) #ajout de t1 dans les précédence de t2
+                print(dic)
+                break
+    else:
+        print("pas d'interferance entre les deux taches")
+
+
 
 
 class TaskSystem:  
@@ -130,12 +162,12 @@ t1.run = runT1
 
 t2 = Task()
 t2.name = "T2"
-t2.writes = ["Y"]
+t2.writes = ["X"]
 t2.run = runT2
 
 t3 = Task()
-t3.name = "T2"
-t3.writes = ["M"]
+t3.name = "T3"
+t3.writes = ["X"]
 t3.run = runT3
 
 tSomme = Task()
@@ -153,8 +185,15 @@ taches.append(t1)
 taches.append(t2)
 taches.append(t3)
 
-dic = {"somme":["T1","T2"],"T1":[],"T2":["T3","T1"],"T3":[]}# le dictionnaire donne par l'utilisateur
+dic = {"somme":["T1","T2"],"T1":[],"T2":["T3"],"T3":["T2"]}# le dictionnaire donne par l'utilisateur
 dicfinal={} #le dictionnaire donne par la parallelisation maximal 
 
 
-s1 = TaskSystem([t1, t2, tSomme], {"T1": [], "T2": ["T1"], "somme": ["T1", "T2"]})
+s1 = TaskSystem(taches,dic)
+
+SupprInter(t1,t2)
+
+    
+
+
+

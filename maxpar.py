@@ -34,7 +34,7 @@ def bernstein(t1,t2):
 
 #Lister les interférences entre les diffèrentes taches
 #Déterminer à partir des interférences les relations de précédences à imposer pour évites les interférences
-#Supprimer les arcs qui n'entraineront pas d'interférence 
+#Supprimer les arcs qui n'entraineront pas d'interférence  --> parallèlisé les taches qui le peuvent
 #Ajouter les relations de précédences trouver pour éviter les interférences 
 #supprimer les redondances = les plus courts
 
@@ -65,6 +65,14 @@ def SupprInter(nomt1,nomt2):
                 break
     else:
         print("Aucune interferance entre les deux taches")
+        ParaTache(nomt1,nomt2)
+
+
+def ParaTache(nomt1,nomt2):#Paralléliser les taches qui n'ont pas d'interférence 
+    print(dic)
+    dic[nomt2.name].remove(nomt1.name) #suppression de t1 dans les précédence de t2
+    print(dic)
+
 
 
 
@@ -162,7 +170,7 @@ t1.run = runT1
 
 t2 = Task()
 t2.name = "T2"
-t2.writes = ["X"]
+t2.writes = ["Y"]
 t2.run = runT2
 
 t3 = Task()
@@ -185,7 +193,7 @@ taches.append(t1)
 taches.append(t2)
 taches.append(t3)
 
-dic = {"somme":["T1","T2"],"T1":[],"T2":["T3"],"T3":["T2"]}# le dictionnaire donne par l'utilisateur
+dic = {"somme":["T1","T2"],"T1":[],"T2":["T1"],"T3":["T2"]}# le dictionnaire donne par l'utilisateur
 dicfinal={} #le dictionnaire donne par la parallelisation maximal 
 
 

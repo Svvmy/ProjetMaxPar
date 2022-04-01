@@ -1,6 +1,9 @@
-from curses import keyname
+
 from unicodedata import name
 import copy
+
+from testDict import getDependencies
+
 
 
 class Task:
@@ -54,6 +57,11 @@ def bernstein(t1,t2):
 
 def SupprInter(nomt1,nomt2): 
     if not bernstein(nomt1, nomt2):#vérifie si interferance 
+        if(dic[nomt2.name] == []): #si t2 n'a pas de precedences
+            print(dic)
+            dic[nomt2.name].append(nomt1.name)
+            print(dic)
+            return False
         for i in dic[nomt2.name]: #parcours les précédences de la tache 2
             if(i == nomt1.name): #Et ce que t1 est deja dans les precedences de t2
                 print("relations de précédence entre",nomt1.name,nomt2.name)
@@ -66,13 +74,23 @@ def SupprInter(nomt1,nomt2):
     else:
         print("Aucune interferance entre les deux taches")
         ParaTache(nomt1,nomt2)
+        
 
 
 def ParaTache(nomt1,nomt2):#Paralléliser les taches qui n'ont pas d'interférence 
-    print(dic)
-    dic[nomt2.name].remove(nomt1.name) #suppression de t1 dans les précédence de t2
-    print(dic)
+    if bernstein(nomt1, nomt2):#pas d'interférance
+        print(dic)
+        dic[nomt2.name].remove(nomt1.name) #suppression de t1 dans les précédence de t2
+        print(dic)
 
+
+
+
+
+"""dic
+    vérifier pour chaque taches celles qui en possédent 2 
+
+"""
 
 
 
@@ -83,18 +101,73 @@ class TaskSystem:
         self.taches = taches
         self.dic = dic
     
+    """def getDependencies(self,nomTache):
+        for key in dic.keys():
+            #str = " ".join(map(str, self.dic.get(key)))
+            if(key == nomTache and dic.get(nomTache) == ""):
+                print("La tache", nomTache, "n'a pas de précédence")
+                break
+            elif(key == nomTache and not dic[nomTache] == ""):
+                print("Les précédences de la tache", nomTache,"sont", dic[nomTache])
+                break"""
     
-    def getDependencies(self,nomTache):# donne pour une tache la liste des taches à exécuter avant cette tache
-        dicfinal[nomTache.name] = list()
-        for i in dic[nomTache.name]:
-            for j in taches:
-                if(j.name == i):
-                    if not bernstein(nomTache,j):
-                        dicfinal[nomTache.name].append(i)
+    def getDependencies(self,nomTache): # donne la liste des taches qui s'éxécute avant une tache donnée
+        if(dic[nomTache.name] == []): #si la tache ne possède pas de précedence
+             print("La tache "+nomTache.name+ " n'a pas de précédence")
+        else:
+            for value in dic[nomTache.name]:
+                if(not value == ""):
+                    print("Les précédences de la tache " + nomTache.name+ " sont", dic[nomTache.name])
+                    return dic[nomTache.name]
+                #elif(nomTache not in dic.keys()):
+                    #print("la tache n'existe pas")
+          
+'''
+def redondances(nomt1,nomt2):
+        for i in range (len(dic)): #pour i dans la sequence des taches du dic de la premiere a la derniere tache
+            for j in range(len(dic.get(i))): #pour j dans le sequence des precedences de la tache i
+                for k in range(i+1,len(dic)): #pour k la tache suivant i dans le dic
+                    for l in range (len(dic.get(k))): #pour l dna les precedences de k
+                        if dic.get(i).get(j)==dic.get(k).get(l) and (TaskSystem.taches[k]) in dic.get(i).values():
+                            dic.get(i).pop(dic.getKey(dic.get(i),dic.get(k).get(l)))
+        return dic
+'''
+
+def redondances (nomt):
+  
+    s1.getDependencies(nomt)
+    """
+    for i in nomt:
+         for j in nomt:
+            if(i != j):
+                 print (i)
+                 print(j)
+            break
+        """
         
-            
-#exécuter les tâches du système en parallélisant celles qui peuvent être parallélisées 
 def run(self):
+    print("att")
+    l1 = taches
+    l2 = list()
+    lsp =list()# liste taches sans précédences
+    for key, value in dic.items():
+        if(not value):
+            for t in taches:
+                if(t.name==key):
+                    lsp.append(t)
+            
+                    print(lsp)
+            #while(i!= len(lsp)):
+            for t1 in lsp:
+                for t2 in lsp:
+                    SupprInter(t1,t2)
+                
+                
+            
+    
+          
+#exécuter les tâches du système en parallélisant celles qui peuvent être parallélisées 
+"""def run(self):
      id=0
      dictio= copy.deepcopy(dicfinal) #on travail sur une copie du dictionaire
      l1= taches #listes des taches non-éxecutées encore
@@ -134,7 +207,7 @@ def run(self):
              dicfinal.pop(key)
      print()
      print("Pour consulter l'ordre et les précédents de chaque tâches, il faut consulter le vrai dictionaire (dicfinal)")
-
+"""
 def getTache(nomdetache,taches):
     for t in taches:
         if(nomdetache == t.name):
@@ -158,6 +231,7 @@ def runT2():
 def runT3():
     global M
     M = 3
+    
 
 def runTsomme():
     global X, Y, Z
@@ -170,7 +244,7 @@ t1.run = runT1
 
 t2 = Task()
 t2.name = "T2"
-t2.writes = ["Y"]
+t2.writes = ["X"]
 t2.run = runT2
 
 t3 = Task()
@@ -193,15 +267,28 @@ taches.append(t1)
 taches.append(t2)
 taches.append(t3)
 
-dic = {"somme":["T1","T2"],"T1":[],"T2":["T1"],"T3":["T2"]}# le dictionnaire donne par l'utilisateur
+dic = {"somme":["T1","T2"],"T1":[],"T2":[],"T3":["T1"]}# le dictionnaire donne par l'utilisateur
 dicfinal={} #le dictionnaire donne par la parallelisation maximal 
 
 
 s1 = TaskSystem(taches,dic)
 
-SupprInter(t1,t2)
+#afficher l'ensemble des precédences des taches de 1
+#for i in s1.taches:
+    #s1.getDependencies(i)
 
-    
+#print(dic.keys())
+
+#s1.getDependencies(t3)
+
+test = redondances(tSomme)
+print(test)
+
+#run(s1)
+#SupprInter(t1,t2)
+#ParaTache(t1,t2)
+
+
 
 
 

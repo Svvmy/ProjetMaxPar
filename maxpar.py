@@ -2,7 +2,7 @@
 from unicodedata import name
 import copy
 
-from testDict import getDependencies
+
 
 
 
@@ -31,7 +31,6 @@ def bernstein(t1,t2):
                 return False      
             
     return True
-
 
 #étapes de la parallèlisation maximal:
 
@@ -63,7 +62,7 @@ def SupprInter(nomt1,nomt2):
             print(dic)
             return False
         for i in dic[nomt2.name]: #parcours les précédences de la tache 2
-            if(i == nomt1.name): #Et ce que t1 est deja dans les precedences de t2
+            if(i == nomt1.name): #Et ce que t1 est deja dans les precedences de t2 ?
                 print("relations de précédence entre",nomt1.name,nomt2.name)
                 return False
             else:
@@ -72,15 +71,16 @@ def SupprInter(nomt1,nomt2):
                 print(dic)
                 break
     else:
-        print("Aucune interferance entre les deux taches")
-        ParaTache(nomt1,nomt2)
+        print("Aucune interferance entre les deux taches "+nomt1.name+ " et " +nomt2.name)
+        
+        
         
 
 
-def ParaTache(nomt1,nomt2):#Paralléliser les taches qui n'ont pas d'interférence 
+def ParaTache(nomt1,nomt2):#Paralléliser les taches qui n'ont pas d'interférences 
     if bernstein(nomt1, nomt2):#pas d'interférance
         print(dic)
-        dic[nomt2.name].remove(nomt1.name) #suppression de t1 dans les précédence de t2
+        dic[nomt2.name].remove(nomt1.name) #suppression de t1 dans les précédences de t2
         print(dic)
 
 
@@ -100,16 +100,6 @@ class TaskSystem:
     def __init__(self,taches,dic): 
         self.taches = taches
         self.dic = dic
-    
-    """def getDependencies(self,nomTache):
-        for key in dic.keys():
-            #str = " ".join(map(str, self.dic.get(key)))
-            if(key == nomTache and dic.get(nomTache) == ""):
-                print("La tache", nomTache, "n'a pas de précédence")
-                break
-            elif(key == nomTache and not dic[nomTache] == ""):
-                print("Les précédences de la tache", nomTache,"sont", dic[nomTache])
-                break"""
     
     def getDependencies(self,nomTache): # donne la liste des taches qui s'éxécute avant une tache donnée
         if(dic[nomTache.name] == []): #si la tache ne possède pas de précedence
@@ -136,17 +126,28 @@ def redondances(nomt1,nomt2):
 def redondances (nomt):
   
     s1.getDependencies(nomt)
+    for i in dic[nomt.name]:
+        #tache en question
+        print("pour la tache",i,"voici les precedences")
+  
+        for j in dic.get(i):
+            #precedences tache
+            print(j)
+            for k in dic.get(i):
+                if (k != j):
+                    print(k)
+            break
+    
+         
+    s1.getDependencies(nomt)
     """
-    for i in nomt:
-         for j in nomt:
-            if(i != j):
-                 print (i)
-                 print(j)
+        if (k == j):
+                dic.get(nomt.tache).remove(j)
             break
         """
         
 def run(self):
-    print("att")
+    print("Début du run")
     l1 = taches
     l2 = list()
     lsp =list()# liste taches sans précédences
@@ -154,13 +155,31 @@ def run(self):
         if(not value):
             for t in taches:
                 if(t.name==key):
-                    lsp.append(t)
+                    lsp.append(t.name)
             
-                    print(lsp)
-            #while(i!= len(lsp)):
-            for t1 in lsp:
-                for t2 in lsp:
-                    SupprInter(t1,t2)
+                    #print(lsp)
+    lsp2 = lsp
+    for t in lsp:
+        print(t)
+        lsp2.remove(t)
+        #print(t)
+        for key in l1:
+            if(key.name==t):
+                print(key.name)
+                for j in lsp2:
+                    print(j+"tache compare")
+                    for key2 in l1:
+                        if(key2.name==j):
+                            print("ici")
+                            if(t!=j):
+                                SupprInter(key,key2)
+                                #lsp.remove(t)
+                                print("arriver")
+                                #print(t2.name)
+                                break
+        l1.remove(key)    
+        
+
                 
                 
             
@@ -232,7 +251,6 @@ def runT3():
     global M
     M = 3
     
-
 def runTsomme():
     global X, Y, Z
     Z = X + Y
@@ -267,7 +285,7 @@ taches.append(t1)
 taches.append(t2)
 taches.append(t3)
 
-dic = {"somme":["T1","T2"],"T1":[],"T2":[],"T3":["T1"]}# le dictionnaire donne par l'utilisateur
+dic = {"somme":["T1","T2"],"T1":[],"T2":[],"T3":[]}# le dictionnaire donne par l'utilisateur
 dicfinal={} #le dictionnaire donne par la parallelisation maximal 
 
 
@@ -281,8 +299,9 @@ s1 = TaskSystem(taches,dic)
 
 #s1.getDependencies(t3)
 
-test = redondances(tSomme)
-print(test)
+#test = redondances(tSomme)
+#print(test)
+runT1()
 
 #run(s1)
 #SupprInter(t1,t2)

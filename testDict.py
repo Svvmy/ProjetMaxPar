@@ -1,3 +1,6 @@
+from asyncio import tasks
+
+
 class Task:
     name = ""
     reads = []
@@ -23,14 +26,15 @@ def bernstein(t1,t2):
             return True
 
 
-def getDependencies(self,nomTache):# donne pour une tache la liste des taches à exécuter avant cette tache
-        dicfinal[nomTache.name] = list()
-        for i in dic[nomTache.name]:
-            for j in taches:
-                if(j.name == i):
-                    if not bernstein(nomTache,j):
-                        dicfinal[nomTache.name].append(i)
-
+def getDependencies(nomTache):
+        for key in dic.keys():
+            if(key == nomTache and dic[nomTache.name] == ""):
+                print("La tache", nomTache, "n'a pas de précédence")
+                break
+            elif(key == nomTache and not dic[nomTache.name] == ""):
+                print("Les précédences de la tache", nomTache,"sont", dic[nomTache])
+                break
+                
 
 
 
@@ -88,10 +92,8 @@ dicfinal ={}
 
 
 
-print(dic["somme"])
+#print(dic["somme"])
 #print(dic["somme"].append())
 
-
-                        
-
-print(getDependencies(t2,t2))
+getDependencies(t1) 
+#print(getDependencies(t2))

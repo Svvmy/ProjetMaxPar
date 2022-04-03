@@ -1,6 +1,8 @@
 
+import time
 from unicodedata import name
 import copy
+import threading
 
 
 
@@ -56,22 +58,24 @@ def bernstein(t1,t2):
 
 def SupprInter(nomt1,nomt2): 
     if not bernstein(nomt1, nomt2):#vérifie si interferance 
+        for i in dic[nomt1.name]: #parcours les précédences de la tache 1
+            if(i == nomt2.name): #Est ce que t2 est deja dans les precedences de t1 ?
+                print(nomt2.name," précéde ",nomt1.name)
+                return False
         if(dic[nomt2.name] == []): #si t2 n'a pas de precedences
-            print(dic)
             dic[nomt2.name].append(nomt1.name)
-            print(dic)
             return False
         for i in dic[nomt2.name]: #parcours les précédences de la tache 2
-            if(i == nomt1.name): #Et ce que t1 est deja dans les precedences de t2 ?
-                print("relations de précédence entre",nomt1.name,nomt2.name)
+            if(i == nomt1.name): #Est ce que t1 est deja dans les precedences de t2 ?
+                print(nomt1.name," précéde ",nomt2.name)
                 return False
-            else:
-                print(dic)
-                dic[nomt2.name].append(nomt1.name) #ajout de t1 dans les précédence de t2
-                print(dic)
-                break
+        else:
+            dic[nomt2.name].append(nomt1.name) #ajout de t1 dans les précédence de t2
+            print("ajout de "+nomt1.name+" dans les précédences "+nomt2.name)
+            #break
     else:
         print("Aucune interferance entre les deux taches "+nomt1.name+ " et " +nomt2.name)
+        return True
         
         
         
@@ -79,9 +83,13 @@ def SupprInter(nomt1,nomt2):
 
 def ParaTache(nomt1,nomt2):#Paralléliser les taches qui n'ont pas d'interférences 
     if bernstein(nomt1, nomt2):#pas d'interférance
-        print(dic)
-        dic[nomt2.name].remove(nomt1.name) #suppression de t1 dans les précédences de t2
-        print(dic)
+        for i in dic[nomt2.name]:
+            if(i == nomt1.name):
+                dic[nomt2.name].remove(nomt1.name) #suppression de t1 dans les précédences de t2
+                print("Supression de ",nomt1.name," dans les précédences de ",nomt2.name)
+            else:
+                print(nomt1.name,"n'est pas dans les précédences de", nomt2.name)
+                break
 
 
 
@@ -111,7 +119,28 @@ class TaskSystem:
                     return dic[nomTache.name]
                 #elif(nomTache not in dic.keys()):
                     #print("la tache n'existe pas")
+                    
+    
+    
+    def paraMax(self):
+        print("test paraMax //////////////////////////")
+        print("le dictionnaire de précedence :",dic)
+        afficheTaches(s1)
+        
+        print("vérification d'interference entre les taches et suppression des arcs non essentiel") 
+        
+        for tache in taches:
+            for tache2 in taches:
+                if(tache!=tache2):
+                    SupprInter(tache,tache2)
+                    ParaTache(tache,tache2)
+                    #manque la redondance
+            
+        
+                    
           
+
+
 '''
 def redondances(nomt1,nomt2):
         for i in range (len(dic)): #pour i dans la sequence des taches du dic de la premiere a la derniere tache
@@ -125,21 +154,32 @@ def redondances(nomt1,nomt2):
 
 def redondances (nomt):
   
+    CheminVisiter = []
+    CheminActuelle = []
+  
     s1.getDependencies(nomt)
     for i in dic[nomt.name]:
         #tache en question
-        print("pour la tache",i,"voici les precedences")
-  
+        print("pour la tache",i,"voici une precedences")
         for j in dic.get(i):
+            CheminActuelle.append(i)
+            CheminActuelle.append(j)
             #precedences tache
             print(j)
-            for k in dic.get(i):
-                if (k != j):
+
+            while (dic.get(j) != []): #si t n'a pas de precedences
+                for k in dic.get(j):
+                    print("pour la tache",j,"voici une precedences")
                     print(k)
-            break
-    
-         
-    s1.getDependencies(nomt)
+                    CheminActuelle.append(k)
+                    j = k
+                    print("nouvelle valeur de j:",j)
+                    #CheminActuelle.append(j)
+                    break
+            CheminVisiter.append(CheminActuelle)
+            print("voila le chemin actuelle",CheminActuelle) 
+            print("liste des chemins visiter",CheminVisiter) 
+            CheminActuelle = []
     """
         if (k == j):
                 dic.get(nomt.tache).remove(j)
@@ -148,36 +188,26 @@ def redondances (nomt):
         
 def run(self):
     print("Début du run")
-    l1 = taches
-    l2 = list()
+    l1 = taches #listes des taches du système pas encore éxécuté
+    l2 = list() #liste des taches éxécutés
     lsp =list()# liste taches sans précédences
     for key, value in dic.items():
         if(not value):
             for t in taches:
                 if(t.name==key):
-                    lsp.append(t.name)
-            
+                    lsp.append(t)#ajout des taches sans précédences dans la liste lsp
                     #print(lsp)
     lsp2 = lsp
     for t in lsp:
-        print(t)
-        lsp2.remove(t)
-        #print(t)
-        for key in l1:
-            if(key.name==t):
-                print(key.name)
-                for j in lsp2:
-                    print(j+"tache compare")
-                    for key2 in l1:
-                        if(key2.name==j):
-                            print("ici")
-                            if(t!=j):
-                                SupprInter(key,key2)
-                                #lsp.remove(t)
-                                print("arriver")
-                                #print(t2.name)
-                                break
-        l1.remove(key)    
+        if(t.name == key):
+            l1.remove(t)
+            l2.append(t)
+            t = threading.Thread(target = t.run)
+            t.start()
+        
+        
+    
+     
         
 
                 
@@ -232,28 +262,61 @@ def getTache(nomdetache,taches):
         if(nomdetache == t.name):
             return t
 
+def afficheTaches(self): #affiche la liste des taches du système
+    print("Liste des taches:")
+    for t in taches:
+        print(t.name)
+    
+        
+
+    
+
+
 
 #utilisation de la classe Task   
 X = None
 Y = None
 Z = None
 M = None
+N = None
+P = None
+L = None
 
 def runT1():
     global X
     X = 1
+    print("run de t1",X)
 
 def runT2():
     global Y
     Y = 2
+    print(Y)
 
 def runT3():
     global M
     M = 3
+    print(M)
+    
+def runT4():
+    global N
+    N = 3
+    time.sleep(5)
+    print("run de T4",N)
+
+def runT5():
+    global L
+    L = 3
+    print("run de T5",L)
+
+def runT6():
+    global P
+    P = 3
+    print("run de T6",P)
     
 def runTsomme():
     global X, Y, Z
     Z = X + Y
+    print("run de tSomme",Z)
 
 t1 = Task()
 t1.name = "T1"
@@ -270,6 +333,21 @@ t3.name = "T3"
 t3.writes = ["X"]
 t3.run = runT3
 
+t4 = Task()
+t4.name = "T4"
+t4.writes = ["V"]
+t4.run = runT4
+
+t5 = Task()
+t5.name = "T5"
+t5.writes = ["V"]
+t5.run = runT5
+
+t6 = Task()
+t6.name = "T6"
+t6.writes = ["V"]
+t6.run = runT6
+
 tSomme = Task()
 tSomme.name = "somme"
 tSomme.reads = ["X", "Y"]
@@ -284,8 +362,11 @@ taches.append(tSomme)
 taches.append(t1)
 taches.append(t2)
 taches.append(t3)
+taches.append(t4)
+taches.append(t5)
+taches.append(t6)
 
-dic = {"somme":["T1","T2"],"T1":[],"T2":[],"T3":[]}# le dictionnaire donne par l'utilisateur
+dic = {"somme":["T1","T3"],"T1":[],"T2":["T3", "T5"],"T3":["T4", "T5"],"T4":["T1"], "T5":[], "T6":["T2"]}# le dictionnaire donne par l'utilisateur
 dicfinal={} #le dictionnaire donne par la parallelisation maximal 
 
 
@@ -297,15 +378,34 @@ s1 = TaskSystem(taches,dic)
 
 #print(dic.keys())
 
-#s1.getDependencies(t3)
+#s1.getDependencies(t1)
 
 #test = redondances(tSomme)
 #print(test)
-runT1()
+#runT1()
 
-#run(s1)
+#print(dic)
+#s1.paraMax()
+#print(dic)
+
+#t4 = threading.Thread(target = runT4)
+#t4.start()
+#t4.join # attend que t4 se termine pour passer au prochain thread 
+
+#t5 = threading.Thread(target = runT5)
+#t5.start()
+
+
+
+
+
+
+
+
+
+run(s1)
 #SupprInter(t1,t2)
-#ParaTache(t1,t2)
+#ParaTache(t1,t6)
 
 
 

@@ -160,31 +160,64 @@ def redondances (nomt):
     s1.getDependencies(nomt)
     for i in dic[nomt.name]:
         #tache en question
-        print("pour la tache",i,"voici une precedences")
+        #print("pour la tache",i,"voici une precedences")
         for j in dic.get(i):
             CheminActuelle.append(i)
             CheminActuelle.append(j)
             #precedences tache
-            print(j)
+            #print(j)
 
             while (dic.get(j) != []): #si t n'a pas de precedences
                 for k in dic.get(j):
-                    print("pour la tache",j,"voici une precedences")
-                    print(k)
+                    #print("pour la tache",j,"voici une precedences")
+                    #print(k)
                     CheminActuelle.append(k)
                     j = k
-                    print("nouvelle valeur de j:",j)
+                    #print("nouvelle valeur de j:",j)
                     #CheminActuelle.append(j)
                     break
             CheminVisiter.append(CheminActuelle)
-            print("voila le chemin actuelle",CheminActuelle) 
-            print("liste des chemins visiter",CheminVisiter) 
+            #print("voila le chemin actuelle",CheminActuelle) 
             CheminActuelle = []
-    """
-        if (k == j):
-                dic.get(nomt.tache).remove(j)
+            #print("liste des chemins visiter",CheminVisiter)
+
+    print("liste des chemins visiter",CheminVisiter)
+            
+ 
+    for x in dic[nomt.name]:
+        #print(x)
+        for y in CheminVisiter:
+            if x in y :
+                #print(y)
+                for z in CheminVisiter:
+                    if x in z:
+                        if (z != y) :
+                            if len(z) > len(y) :
+                                CheminVisiter.remove(y)
+                                y = z
+                                #print(z)
+                                print(CheminVisiter)
+                            elif len(z) < len(y) :
+                                CheminVisiter.remove(z)
+                                print(CheminVisiter)
             break
-        """
+ 
+    
+    CheminPlusLong = CheminVisiter[0]
+    print("chemin le plus long",CheminPlusLong)
+    e = CheminPlusLong[0]
+    print("le premier element",e)
+    
+    for s in dic[nomt.name]:
+        if s != e:
+            print("tache",s)
+            if s in CheminPlusLong:
+                print(CheminPlusLong)
+                print(s)
+                dic[nomt.name].remove(s) #suppression de s dans les précédences de t
+    s1.getDependencies(nomt)
+
+
         
 def run(self):
     print("Début du run")
@@ -200,10 +233,17 @@ def run(self):
     lsp2 = lsp
     for t in lsp:
         if(t.name == key):
-            l1.remove(t)
-            l2.append(t)
+            #l1.remove(t)
+            #l2.append(t)
             t = threading.Thread(target = t.run)
             t.start()
+    
+    '''for t in l1:
+        for i in dic[t.name]:
+            if(i not in l2):
+                t =threading.Thread(target = t.run)
+                t.start()'''
+                    
         
         
     
@@ -366,7 +406,7 @@ taches.append(t4)
 taches.append(t5)
 taches.append(t6)
 
-dic = {"somme":["T1","T3"],"T1":[],"T2":["T3", "T5"],"T3":["T4", "T5"],"T4":["T1"], "T5":[], "T6":["T2"]}# le dictionnaire donne par l'utilisateur
+dic = {"somme":["T1","T2", "T3"],"T1":["T5"],"T2":["T3", "T5"],"T3":["T4", "T5"],"T4":["T1"], "T5":["T6"], "T6":[]}# le dictionnaire donne par l'utilisateur
 dicfinal={} #le dictionnaire donne par la parallelisation maximal 
 
 
@@ -380,8 +420,8 @@ s1 = TaskSystem(taches,dic)
 
 #s1.getDependencies(t1)
 
-#test = redondances(tSomme)
-#print(test)
+test = redondances(tSomme)
+print(test)
 #runT1()
 
 #print(dic)
@@ -403,7 +443,7 @@ s1 = TaskSystem(taches,dic)
 
 
 
-run(s1)
+#run(s1)
 #SupprInter(t1,t2)
 #ParaTache(t1,t6)
 

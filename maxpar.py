@@ -136,21 +136,12 @@ class TaskSystem:
                     ParaTache(tache,tache2)
                     #manque la redondance
             
-        
-                    
-          
 
 
-'''
-def redondances(nomt1,nomt2):
-        for i in range (len(dic)): #pour i dans la sequence des taches du dic de la premiere a la derniere tache
-            for j in range(len(dic.get(i))): #pour j dans le sequence des precedences de la tache i
-                for k in range(i+1,len(dic)): #pour k la tache suivant i dans le dic
-                    for l in range (len(dic.get(k))): #pour l dna les precedences de k
-                        if dic.get(i).get(j)==dic.get(k).get(l) and (TaskSystem.taches[k]) in dic.get(i).values():
-                            dic.get(i).pop(dic.getKey(dic.get(i),dic.get(k).get(l)))
-        return dic
-'''
+
+
+            
+
 
 def redondances (nomt):
   
@@ -212,10 +203,14 @@ def redondances (nomt):
         if s != e:
             print("tache",s)
             if s in CheminPlusLong:
-                print(CheminPlusLong)
-                print(s)
+                #print(CheminPlusLong)
+                print(s,"est une redondances")
                 dic[nomt.name].remove(s) #suppression de s dans les précédences de t
     s1.getDependencies(nomt)
+
+
+        
+
 
 
         
@@ -230,19 +225,22 @@ def run(self):
                 if(t.name==key):
                     lsp.append(t)#ajout des taches sans précédences dans la liste lsp
                     #print(lsp)
-    lsp2 = lsp
+    #lsp2 = lsp
     for t in lsp:
         if(t.name == key):
-            #l1.remove(t)
-            #l2.append(t)
+            l1.remove(t)
+            l2.append(t)
             t = threading.Thread(target = t.run)
             t.start()
     
-    '''for t in l1:
+    for t in l1:
         for i in dic[t.name]:
             if(i not in l2):
-                t =threading.Thread(target = t.run)
-                t.start()'''
+                t = threading.Thread(target = t.run)
+                t.start()
+                l2.append(t)
+                #l1.remove(t)
+                
                     
         
         
@@ -325,22 +323,22 @@ L = None
 def runT1():
     global X
     X = 1
-    print("run de t1",X)
+    print("run de T1",X)
 
 def runT2():
     global Y
     Y = 2
-    print(Y)
+    print("run de T2",Y)
 
 def runT3():
     global M
     M = 3
-    print(M)
+    print("run de T3",M)
     
 def runT4():
     global N
     N = 3
-    time.sleep(5)
+    #time.sleep(5)
     print("run de T4",N)
 
 def runT5():
@@ -365,7 +363,7 @@ t1.run = runT1
 
 t2 = Task()
 t2.name = "T2"
-t2.writes = ["X"]
+t2.writes = ["Y"]
 t2.run = runT2
 
 t3 = Task()
@@ -406,7 +404,7 @@ taches.append(t4)
 taches.append(t5)
 taches.append(t6)
 
-dic = {"somme":["T1","T2", "T3"],"T1":["T5"],"T2":["T3", "T5"],"T3":["T4", "T5"],"T4":["T1"], "T5":["T6"], "T6":[]}# le dictionnaire donne par l'utilisateur
+dic = {"somme":["T1","T2","T3"],"T1":["T5"],"T2":["T3","T5"],"T3":["T4", "T5"],"T4":["T1"], "T5":["T6"], "T6":[]}# le dictionnaire donne par l'utilisateur
 dicfinal={} #le dictionnaire donne par la parallelisation maximal 
 
 
@@ -435,12 +433,15 @@ print(test)
 #t5 = threading.Thread(target = runT5)
 #t5.start()
 
+t1 = threading.Thread(target = runT1)
+t1.start()
+#t4.join # attend que t4 se termine pour passer au prochain thread 
 
+t2 = threading.Thread(target = runT2)
+t2.start()
 
-
-
-
-
+tSomme = threading.Thread(target = runTsomme)
+tSomme.start()
 
 
 #run(s1)

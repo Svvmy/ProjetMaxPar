@@ -5,9 +5,6 @@ import copy
 import threading
 
 
-
-
-
 class Task:
     name = ""
     reads = []
@@ -78,7 +75,6 @@ def SupprInter(nomt1,nomt2):
         return True
         
         
-        
 
 
 def ParaTache(nomt1,nomt2):#Paralléliser les taches qui n'ont pas d'interférences 
@@ -134,78 +130,82 @@ class TaskSystem:
                 if(tache!=tache2):
                     SupprInter(tache,tache2)
                     ParaTache(tache,tache2)
-                    #manque la redondance
-            
-
-
-
+        #for tache in taches:
+            #redondances(tache)            
 
             
 
 
-def redondances (nomt):
+
+
+            
+
+
+def redondances(nomt):
   
     CheminVisiter = []
     CheminActuelle = []
-  
+        
     s1.getDependencies(nomt)
-    for i in dic[nomt.name]:
-        #tache en question
-        #print("pour la tache",i,"voici une precedences")
-        for j in dic.get(i):
-            CheminActuelle.append(i)
-            CheminActuelle.append(j)
-            #precedences tache
-            #print(j)
+    if(dic[nomt.name] == []): #si t n'a pas de precedences
+        print("pas de redondance à éliminer car la tache n'a pas de  pas de précedence")
+    else:
+        for i in dic[nomt.name]:
+            #tache en question
+            #print("pour la tache",i,"voici une precedences")
+            for j in dic.get(i):
+                CheminActuelle.append(i)
+                CheminActuelle.append(j)
+                #precedences tache
+                #print(j)
 
-            while (dic.get(j) != []): #si t n'a pas de precedences
-                for k in dic.get(j):
-                    #print("pour la tache",j,"voici une precedences")
-                    #print(k)
-                    CheminActuelle.append(k)
-                    j = k
-                    #print("nouvelle valeur de j:",j)
-                    #CheminActuelle.append(j)
-                    break
-            CheminVisiter.append(CheminActuelle)
-            #print("voila le chemin actuelle",CheminActuelle) 
-            CheminActuelle = []
-            #print("liste des chemins visiter",CheminVisiter)
+                while (dic.get(j) != []): #si t n'a pas de precedences
+                    for k in dic.get(j):
+                        #print("pour la tache",j,"voici une precedences")
+                        #print(k)
+                        CheminActuelle.append(k)
+                        j = k
+                        #print("nouvelle valeur de j:",j)
+                        break
+                CheminVisiter.append(CheminActuelle)
+                #print("voila le chemin actuelle",CheminActuelle) 
+                CheminActuelle = []
+                #print("liste des chemins visiter",CheminVisiter)
 
-    print("liste des chemins visiter",CheminVisiter)
+        print("liste des chemins visiter",CheminVisiter)
             
  
-    for x in dic[nomt.name]:
-        #print(x)
-        for y in CheminVisiter:
-            if x in y :
-                #print(y)
-                for z in CheminVisiter:
-                    if x in z:
-                        if (z != y) :
-                            if len(z) > len(y) :
-                                CheminVisiter.remove(y)
-                                y = z
-                                #print(z)
-                                print(CheminVisiter)
-                            elif len(z) < len(y) :
-                                CheminVisiter.remove(z)
-                                print(CheminVisiter)
-            break
- 
+        for x in dic[nomt.name]:
+            #print(x)
+            for y in CheminVisiter:
+                if x in y :
+                    #print(y)
+                    for z in CheminVisiter:
+                        if x in z:
+                            if (z != y) :
+                                if len(z) > len(y) :
+                                    CheminVisiter.remove(y)
+                                    y = z
+                                    #print(z)
+                                    print(CheminVisiter)
+                                elif len(z) < len(y) :
+                                    CheminVisiter.remove(z)
+                                    print(CheminVisiter)
+                break
     
-    CheminPlusLong = CheminVisiter[0]
-    print("chemin le plus long",CheminPlusLong)
-    e = CheminPlusLong[0]
-    print("le premier element",e)
+        CheminPlusLong = CheminVisiter[0]
+        print("chemin le plus long",CheminPlusLong)
+        e = CheminPlusLong[0]
+        print("le premier element",e)
+
+        for s in dic[nomt.name]:
+            if s != e:
+                print("tache",s)
+                if s in CheminPlusLong:
+                    print(CheminPlusLong)
+                    print(s)
+                    dic[nomt.name].remove(s) #suppression de s dans les précédences de t
     
-    for s in dic[nomt.name]:
-        if s != e:
-            print("tache",s)
-            if s in CheminPlusLong:
-                #print(CheminPlusLong)
-                print(s,"est une redondances")
-                dic[nomt.name].remove(s) #suppression de s dans les précédences de t
     s1.getDependencies(nomt)
 
 
@@ -216,6 +216,10 @@ def redondances (nomt):
         
 def run(self):
     print("Début du run")
+    
+        
+    
+
     l1 = taches #listes des taches du système pas encore éxécuté
     l2 = list() #liste des taches éxécutés
     lsp =list()# liste taches sans précédences
@@ -224,24 +228,66 @@ def run(self):
             for t in taches:
                 if(t.name==key):
                     lsp.append(t)#ajout des taches sans précédences dans la liste lsp
+                    print("ajout de ",t.name, " dans lsp")
                     #print(lsp)
     #lsp2 = lsp
-    for t in lsp:
-        if(t.name == key):
-            l1.remove(t)
-            l2.append(t)
-            t = threading.Thread(target = t.run)
-            t.start()
     
-    for t in l1:
-        for i in dic[t.name]:
-            if(i not in l2):
-                t = threading.Thread(target = t.run)
-                t.start()
-                l2.append(t)
-                #l1.remove(t)
+    #for tache in taches:
+        #print("thread",tache.name)
+        #th = threading.Thread(target = tache.run) 
+        for tachesp in lsp:    
+                th = threading.Thread(target = tachesp.run) 
+                print("exécution de ",tachesp.name)
+                l1.remove(tachesp)
+                lsp.remove(tachesp)
+                #afficheTaches(s1)
+                l2.append(tachesp.name)
+                #threadsp = threading.Thread(target = t.run)
+                #threadsp.start()
+                print(tachesp.name)
+                th.start()
+                print("fin",tachesp.name)
+
+    while(l2 != taches):    
+        for t in l1:# parcours de la liste des taches non éxécuté 
+            check = all(item in l2 for item in dic[t.name])  #on vérifie si toutes les taches qui précédent la tache t sont éxécutés         
+        if(check):  
+            thread = threading.Thread(target = t.run)
+            thread.start()
+            l2.append(t.name)
+            print(t.name)
+            l1.remove(t)
+            if(l1 == []):
+                break 
+            #afficheTaches(s1)
+            #break
+        else:
+            print("toutes les précédences de ",t.name," ne sont pas encore éxécuté")
+            print(dic[t.name])
+            
+            
+            #for i in dic[t.name]: #parcours des précédences de t
+            #for j in l2: #parcours des taches deja éxécutés
+             
+                   
                 
-                    
+                #on parcours toutes les taches pour trouver les taches deja exécutes dans les précédences 
+                # on lance la tache seulement si l'ensemble de ses précédences appartient a liste des taches éxécutés L2
+""""              
+ 
+ for t in l1:# parcours de la liste des taches non éxécuté 
+        #for i in dic[t.name]: #parcours des précédences 
+            #for j in l2: #parcours des taches deja éxécutés
+                #print(j.name)
+ if(i == j.name):
+    print("Lancement")
+    thread.start()
+    l2.append(t)
+    print(t.name)
+    l1.remove(t)
+else:
+    thread.join  
+    """                
         
         
     
@@ -323,38 +369,38 @@ L = None
 def runT1():
     global X
     X = 1
-    print("run de T1",X)
+    print("éxécution de T1",X)
 
 def runT2():
     global Y
     Y = 2
-    print("run de T2",Y)
+    print("éxécution de T2",Y)
 
 def runT3():
     global M
     M = 3
-    print("run de T3",M)
+    print("éxécution de T3",M)
     
 def runT4():
-    global N
-    N = 3
+    global P
+    P = 6
     #time.sleep(5)
-    print("run de T4",N)
+    print("éxécution de T4",P)
 
 def runT5():
     global L
     L = 3
-    print("run de T5",L)
+    print("éxécution de T5",L)
 
 def runT6():
     global P
     P = 3
-    print("run de T6",P)
+    print("éxécution de T6",P)
     
 def runTsomme():
     global X, Y, Z
     Z = X + Y
-    print("run de tSomme",Z)
+    print("éxécution de tSomme",Z)
 
 t1 = Task()
 t1.name = "T1"
@@ -404,8 +450,7 @@ taches.append(t4)
 taches.append(t5)
 taches.append(t6)
 
-dic = {"somme":["T1","T2","T3"],"T1":["T5"],"T2":["T3","T5"],"T3":["T4", "T5"],"T4":["T1"], "T5":["T6"], "T6":[]}# le dictionnaire donne par l'utilisateur
-dicfinal={} #le dictionnaire donne par la parallelisation maximal 
+dic = {"somme":["T1","T2","T3"],"T1":["T5"],"T2":["T3", "T5"],"T3":["T4", "T5"],"T4":[], "T5":["T6"], "T6":[]}# le dictionnaire donne par l'utilisateurdicfinal={} #le dictionnaire donne par la parallelisation maximal 
 
 
 s1 = TaskSystem(taches,dic)
@@ -416,23 +461,23 @@ s1 = TaskSystem(taches,dic)
 
 #print(dic.keys())
 
-#s1.getDependencies(t1)
+#s1.getDependencies(t5)
 
-test = redondances(tSomme)
-print(test)
+#test = redondances(t6)
+#print(test)
 #runT1()
 
 #print(dic)
 #s1.paraMax()
 #print(dic)
-
+#redondances(tSomme)
 #t4 = threading.Thread(target = runT4)
 #t4.start()
 #t4.join # attend que t4 se termine pour passer au prochain thread 
 
 #t5 = threading.Thread(target = runT5)
 #t5.start()
-
+'''
 t1 = threading.Thread(target = runT1)
 t1.start()
 #t4.join # attend que t4 se termine pour passer au prochain thread 
@@ -442,13 +487,24 @@ t2.start()
 
 tSomme = threading.Thread(target = runTsomme)
 tSomme.start()
-
-
+'''
+print(dic)
 #run(s1)
-#SupprInter(t1,t2)
-#ParaTache(t1,t6)
+s1.paraMax()
+redondances(tSomme)
+redondances(t1)
+redondances(t2)
+redondances(t3)
+redondances(t4)
+redondances(t5)
+redondances(t6)
+#run(s1)
+print(dic)
 
 
 
 
 
+
+
+#def bonus1()
